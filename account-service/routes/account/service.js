@@ -1,3 +1,6 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 function generateAccountNumber() {
     const min = 1000000000; // Minimum 10-digit number
     const max = 9999999999; // Maximum 10-digit number
@@ -6,7 +9,6 @@ function generateAccountNumber() {
 
 const createAccount = async (opts, request) => {
     try {
-        const prisma = opts.prisma;
         const { user_id, account_type } = request.body;
 
         const user = await prisma.User.findUnique({
@@ -23,6 +25,7 @@ const createAccount = async (opts, request) => {
             data: {
                 accountType: account_type,
                 accountNumber: account_number,
+                userId: user_id,
             },
         });
         return account;
@@ -34,11 +37,10 @@ const createAccount = async (opts, request) => {
 
 const getAccounts = async (opts, request) => {
     try {
-        const prisma = opts.prisma;
         const { user_id } = request.params;
         const accounts = await prisma.PaymentAccount.findMany({
             where: {
-                UserId: user_id,
+                userId: user_id,
             },
         });
         return accounts;
@@ -50,16 +52,15 @@ const getAccounts = async (opts, request) => {
 
 const getAccountHistory = async (opts, request) => {
     try {
-        const prisma = opts.prisma;
         const { account_id } = request.params;
         const sendingHistory = await prisma.PaymentHistory.findMany({
             where: {
-                senderId: account_id,
+                senderAccountId: account_id,
             },
         });
         const receivingHistory = await prisma.PaymentHistory.findMany({
             where: {
-                receiverId: account_id,
+                receiverAccountId: account_id,
             },
         });
 

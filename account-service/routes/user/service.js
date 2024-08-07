@@ -1,6 +1,8 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 const register = async (opts, request) => {
     try {
-        const prisma = opts.prisma;
         const { email, name, password } = request.body;
         const user = await prisma.User.create({
             data: {
@@ -18,7 +20,6 @@ const register = async (opts, request) => {
 
 const login = async (opts, request) => {
     try {
-        const prisma = opts.prisma;
         const { email, password } = request.body;
         const user = await prisma.User.findUnique({
             where: {

@@ -1,10 +1,8 @@
 const fastify = require("fastify")({ logger: true });
 const errorCodes = require("fastify").errorCodes;
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
 
 fastify.after(() => { 
-  fastify.register(require("./routes/api"), { prisma } ); 
+  fastify.register(require("./routes/api")); 
 });
 
 const start = async () => {

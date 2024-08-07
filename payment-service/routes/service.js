@@ -1,16 +1,18 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 const sendMoney = async (opts, request) => {
     try {
-        const prisma = opts.prisma;
-        const { sender_id, receiver_id, amount } = request.body;
+        const { sender_account_id, receiver_account_id, amount } = request.body;
 
         const sender = await prisma.PaymentAccount.findUnique({
             where: {
-                id: sender_id,
+                id: sender_account_id,
             },
         });
         const receiver = await prisma.PaymentAccount.findUnique({
             where: {
-                id: receiver_id,
+                id: receiver_account_id,
             },
         });
         
@@ -26,7 +28,7 @@ const sendMoney = async (opts, request) => {
 
         await prisma.PaymentAccount.update({
             where: {
-                id: sender_id,
+                id: sender_account_id,
             },
             data: {
                 balance: senderBalance,
@@ -34,7 +36,7 @@ const sendMoney = async (opts, request) => {
         });
         await prisma.PaymentAccount.update({
             where: {
-                id: receiver_id,
+                id: receiver_account_id,
             },
             data: {
                 balance: receiverBalance,
@@ -43,9 +45,10 @@ const sendMoney = async (opts, request) => {
 
         await prisma.PaymentHistory.create({
             data: {
-                senderId: sender_id,
-                receiverId: receiver_id,
+                senderAccountId: sender_account_id,
+                receiverAccountId: receiver_account_id,
                 amount: amount,
+                transactionType: "SEND",
             },
         });
 
@@ -60,7 +63,6 @@ const sendMoney = async (opts, request) => {
 
 const withdrawMoney = async (opts, request) => {
     try {
-        const prisma = opts.prisma;
         const { account_id, amount } = request.body;
 
         const account = await prisma.PaymentAccount.findUnique({
@@ -89,8 +91,9 @@ const withdrawMoney = async (opts, request) => {
 
         await prisma.PaymentHistory.create({
             data: {
-                senderId: account_id,
+                senderAccountId: account_id,
                 amount: amount,
+                transactionType: "WITHDRAW",
             },
         });
 
@@ -105,7 +108,6 @@ const withdrawMoney = async (opts, request) => {
 
 const depositMoney = async (opts, request) => {
     try {
-        const prisma = opts.prisma;
         const { account_id, amount } = request.body;
 
         const account = await prisma.PaymentAccount.findUnique({
@@ -131,8 +133,9 @@ const depositMoney = async (opts, request) => {
         
         await prisma.PaymentHistory.create({
             data: {
-                receiverId: account_id,
+                receiverAccountId: account_id,
                 amount: amount,
+                transactionType: "DEPOSIT",
             },
         });
         

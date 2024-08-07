@@ -28,23 +28,25 @@ model PaymentAccount {
   accountType      String
   accountNumber    String
   balance          Float            @default(0)
+  currency         String           @default("IDR")
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
-  User             User             @relation(fields: [userId], references: [id])
+  user             User             @relation(fields: [userId], references: [id])
   userId           String
   sendingHistory   PaymentHistory[] @relation("sendingHistory")
   receivingHistory PaymentHistory[] @relation("receivingHistory")
 }
 
 model PaymentHistory {
-  id              String          @id @default(uuid())
-  amount          Float
-  currency        String          @default("IDR")
-  transactionType String
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  senderAccount   PaymentAccount? @relation("sendingHistory", fields: [senderId], references: [id])
-  senderId        String?
-  receiverAccount PaymentAccount? @relation("receivingHistory", fields: [receiverId], references: [id])
-  receiverId      String?
+  id                String          @id @default(uuid())
+  amount            Float
+  currency          String          @default("IDR")
+  status            String          @default("SUCCESS")
+  transactionType   String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  senderAccount     PaymentAccount? @relation("sendingHistory", fields: [senderAccountId], references: [id])
+  senderAccountId   String?
+  receiverAccount   PaymentAccount? @relation("receivingHistory", fields: [receiverAccountId], references: [id])
+  receiverAccountId String?
 }

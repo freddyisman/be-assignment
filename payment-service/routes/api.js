@@ -10,13 +10,13 @@ module.exports = (fastify, opts, done) => {
                 body: {
                     type: "object",
                     properties: {
-                        sender_id: { type: "string" },
-                        receiver_id: { type: "string" },
+                        sender_account_id: { type: "string" },
+                        receiver_account_id: { type: "string" },
                         amount: { type: "number" },
                     },
                     required: [
-                        "sender_id",
-                        "receiver_id",
+                        "sender_account_id",
+                        "receiver_account_id",
                         "amount",
                     ],
                 },
