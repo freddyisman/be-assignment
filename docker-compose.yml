@@ -1,0 +1,41 @@
+version : '3'
+services:
+  account-service:
+    build:
+      context: .
+      dockerfile: ./account-service/Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      - postgres-db
+    volumes:
+      - ./prisma:/prisma
+    ports:
+      - "3000:3000"
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: ./payment-service/Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      - postgres-db
+    volumes:
+      - ./prisma:/prisma
+    ports:
+      - "3001:3001"
+      
+  postgres-db:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres-data:
