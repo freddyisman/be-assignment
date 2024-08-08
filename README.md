@@ -30,7 +30,11 @@
    git clone https://github.com/freddyisman/be-assignment.git
    ```
 
-2. Install dependencies for each service:
+2. Set up environment variables:
+   - Create a `.env` file following where the `.env.sample` files are located.
+   - Add the necessary environment variable details.
+
+3. Install dependencies for each service:
    ```
    cd account-service
    npm install
@@ -38,10 +42,6 @@
    cd ../payment-service
    npm install
    ```
-
-3. Set up environment variables:
-   - Create a `.env` file following where the `.env.sample` files are located.
-   - Add the necessary environment variable details.
 
 4. Start the services by running script below (if error, then run it again):
    ```
