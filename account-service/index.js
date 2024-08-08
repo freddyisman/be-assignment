@@ -1,9 +1,25 @@
 const fastify = require("fastify")({ logger: true });
 const errorCodes = require("fastify").errorCodes;
+const { createClient } = require("@supabase/supabase-js");
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
+const { verifyAuthFromRequest } = require("./middlewares/supabase.middleware");
 
-fastify.after(() => { 
-  fastify.register(require("./routes/user/api"));
-  fastify.register(require("./routes/account/api"));
+fastify.after(() => {
+  fastify.addHook('preHandler',(request, reply, done) => {
+    try {
+      if (request.raw.url.startsWith('/user')) {
+        return done(); // Skip token check for user registration and login
+      }
+      verifyAuthFromRequest(request, reply, done, supabase);
+    } catch (e) {
+      return reply.code(500).send(e);
+    }
+  });
+  fastify.register(require("./routes/user/api"), { supabase });
+  fastify.register(require("./routes/account/api"), { supabase });
 });
 
 const start = async () => {
