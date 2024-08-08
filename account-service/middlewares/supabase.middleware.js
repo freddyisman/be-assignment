@@ -28,9 +28,10 @@ const verifyAuthFromRequest = async (req, res, next, supabase) => {
               console.error('Token verification failed:', err);
             } else {
               console.log('Decoded token:', decoded);
+              req.headers.token = token;
+              req.headers.email = decoded.email;
             }
         });
-        req.headers.token = token;
         return next();
     } catch (error) {
         console.error('Token verification failed:', error);

@@ -93,5 +93,31 @@ module.exports = (fastify, opts, done) => {
         }
     );
 
+    fastify.get(
+        "/transaction/history/:account_id",
+        {
+            schema: {
+                description: "Get user specific account transaction history",
+                tags: ["account"],
+                params: {
+                    type: "object",
+                    properties: {
+                        account_id: { type: "string" },
+                    },
+                    required: ["account_id"],
+                },
+            },
+        },
+        async (request, reply) => {
+            try {
+                const data = await service.getAccountHistory(opts, request);
+                return reply.send(data);
+            } catch (e) {
+                console.log(e);
+                return reply.code(500).send(e);
+            }
+        }
+    );
+
     done();
 };

@@ -1,5 +1,6 @@
 const fastify = require("fastify")({ logger: true });
 const errorCodes = require("fastify").errorCodes;
+require("dotenv").config();
 const { createClient } = require("@supabase/supabase-js");
 const supabase = createClient(
   process.env.SUPABASE_URL,

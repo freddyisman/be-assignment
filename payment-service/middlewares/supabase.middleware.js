@@ -24,13 +24,14 @@ const verifyAuthFromRequest = async (req, res, next, supabase) => {
     try {
         const token = extractBearerTokenFromHeaders(req.headers);
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-            if (err) {
-              console.error('Token verification failed:', err);
-            } else {
-              console.log('Decoded token:', decoded);
-            }
+          if (err) {
+            console.error('Token verification failed:', err);
+          } else {
+            console.log('Decoded token:', decoded);
+            req.headers.token = token;
+            req.headers.email = decoded.email;
+          }
         });
-        req.headers.token = token;
         return next();
     } catch (error) {
         console.error('Token verification failed:', error);

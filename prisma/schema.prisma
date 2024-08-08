@@ -26,7 +26,7 @@ model User {
 model PaymentAccount {
   id               String           @id @default(uuid())
   accountType      String
-  accountNumber    String
+  accountNumber    String           @unique
   balance          Float            @default(0)
   currency         String           @default("IDR")
   createdAt        DateTime         @default(now())

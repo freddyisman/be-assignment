@@ -9,11 +9,14 @@ function generateAccountNumber() {
 
 const createAccount = async (opts, request) => {
     try {
-        const { user_id, account_type } = request.body;
+        const supabase = opts.supabase;
+        const token = request.headers.token;
+        const email = request.headers.email;
+        const { account_type } = request.body;        
 
         const user = await prisma.User.findUnique({
             where: {
-                id: user_id,
+                email: email,
             },
         });
         if (!user) {
@@ -25,9 +28,10 @@ const createAccount = async (opts, request) => {
             data: {
                 accountType: account_type,
                 accountNumber: account_number,
-                userId: user_id,
+                userId: user.id,
             },
         });
+
         return account;
     } catch (e) {
         console.log(e);
@@ -37,43 +41,26 @@ const createAccount = async (opts, request) => {
 
 const getAccounts = async (opts, request) => {
     try {
-        const { user_id } = request.params;
+        const supabase = opts.supabase;
+        const token = request.headers.token;
+        const email = request.headers.email;
+
+        const user = await prisma.User.findUnique({
+            where: {
+                email: email,
+            },
+        });
+        if (!user) {
+            throw new Error("User not found");
+        }
+
         const accounts = await prisma.PaymentAccount.findMany({
             where: {
-                userId: user_id,
+                userId: user.id,
             },
         });
+
         return accounts;
-    } catch (e) {
-        console.log(e);
-        throw e;
-    }
-};
-
-const getAccountHistory = async (opts, request) => {
-    try {
-        const { account_id } = request.params;
-        const sendingHistory = await prisma.PaymentHistory.findMany({
-            where: {
-                senderAccountId: account_id,
-            },
-        });
-        const receivingHistory = await prisma.PaymentHistory.findMany({
-            where: {
-                receiverAccountId: account_id,
-            },
-        });
-
-        sendingHistory.forEach((history) => {
-            history.amount = history.amount * -1;
-        });
-
-        const history = sendingHistory.concat(receivingHistory);
-        history.sort((a, b) => {
-            return new Date(b.createdAt) - new Date(a.createdAt);
-        });
-
-        return history;
     } catch (e) {
         console.log(e);
         throw e;
@@ -83,5 +70,4 @@ const getAccountHistory = async (opts, request) => {
 module.exports = {
     createAccount,
     getAccounts,
-    getAccountHistory,
 };
